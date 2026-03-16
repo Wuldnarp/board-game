@@ -8,7 +8,7 @@ import java.util.Map;
 public class Board {
 
     private final Cell[][] playingBoard;
-    private final int boardSize;
+    public final int boardSize;
 
     public Board(int boardSize) {
         this.boardSize = boardSize;
@@ -56,7 +56,7 @@ public class Board {
             return false;
         }
 
-        Cell reverseColor = actor.equals(Cell.WHITE) ? Cell.WHITE : Cell.BLACK;
+        Cell reverseColor = actor.equals(Cell.WHITE) ? Cell.BLACK : Cell.WHITE;
 
         for(int[] direction : Directions.ALL){
             int dirRow = row + direction[0];

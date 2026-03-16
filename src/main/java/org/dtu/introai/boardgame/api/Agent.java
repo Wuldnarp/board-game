@@ -4,5 +4,5 @@ import org.dtu.introai.boardgame.util.Board;
 
 public interface Agent {
 
-    int[] act(Board board) throws InterruptedException;
+    int[] act(Board board);
 }

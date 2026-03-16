@@ -28,7 +28,7 @@ public class Othello {
         }
 
         board.getPlayingBoard()[row][col] = piece;
-        Cell reverseColor = piece.equals(Cell.WHITE) ? Cell.WHITE : Cell.BLACK;
+        Cell reverseColor = piece.equals(Cell.WHITE) ? Cell.BLACK : Cell.WHITE;
 
         for (int[] direction : Directions.ALL) {
             int dirRow = direction[0] + row;
