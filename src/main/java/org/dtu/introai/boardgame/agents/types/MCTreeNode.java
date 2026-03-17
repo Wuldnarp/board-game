@@ -10,14 +10,20 @@ public class MCTreeNode {
     private int losses;
     private int visits;
     private ArrayList<MCTreeNode> children;
+    private MCTreeNode parent;
     private Board board;
 
     public MCTreeNode(){
+        this.parent = null;
         this.children = new ArrayList<>();
     }
 
     public ArrayList<MCTreeNode> getChildren() {
         return children;
+    }
+
+    public MCTreeNode getParent() {
+        return parent;
     }
 
     public int getLosses() {
