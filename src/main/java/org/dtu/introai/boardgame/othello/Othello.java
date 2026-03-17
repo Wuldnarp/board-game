@@ -11,12 +11,12 @@ public class Othello {
 
     final Board board;
     boolean complete;
-    Cell winder;
+    Cell winer;
 
     public Othello(Board board) {
         this.board = board;
         this.complete = false;
-        this.winder = Cell.EMPTY;
+        this.winer = Cell.EMPTY;
     }
 
     /**
@@ -64,13 +64,13 @@ public class Othello {
     }
 
     public void setWinder() {
-        this.winder = board.countPieces().entrySet().stream()
+        this.winer = board.countPieces().entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey).orElseThrow();
     }
 
-    public Cell getWinder() {
-        return winder;
+    public Cell getWiner() {
+        return winer;
     }
 
     public boolean isComplete() {
