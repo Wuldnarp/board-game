@@ -1,7 +1,13 @@
 package org.dtu.introai.boardgame.agents;
 
+import java.util.List;
+import java.util.Random;
+
+// import javax.swing.Action;
+
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
 import org.dtu.introai.boardgame.api.Agent;
+import org.dtu.introai.boardgame.othello.Othello;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
 
@@ -12,7 +18,6 @@ public class MonteCarlo implements Agent {
     private long durationMs;
 
     public MonteCarlo(Cell color, long durationMs){
-        this.tree = new MCTreeNode();
         this.color = color;
         this.durationMs = durationMs;
     }
@@ -20,6 +25,7 @@ public class MonteCarlo implements Agent {
     @Override
     public int[] act(Board board) {
 
+        this.tree = new MCTreeNode(board, null);
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis() - start < durationMs){
             MCTreeNode selectedLeaf = select();
@@ -30,22 +36,93 @@ public class MonteCarlo implements Agent {
         return getAction();
     }
 
+    // Helper method for selecting the child with the highest UCB1 value
+    // From the book page 209.
+    double UCB(MCTreeNode node, MCTreeNode parent) {
+        // always explore unvisited nodes first
+        if (node.getVisits() == 0) {
+            return Double.POSITIVE_INFINITY; 
+        }
+
+        // exploration constant, squareroot (2) from book example
+        double C = 1.4; 
+
+        // exploitation term: win rate of this node
+        // exploration term: prefer nodes visited less relative to parent
+        return ((double) node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
+    }
+
+    // selects the child with the highest UCB1 value
+    MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
+        MCTreeNode best = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+
+        for (MCTreeNode child : node.getChildren()) {
+            double score = UCB(child, node);
+            // updates best if this child has a higher score
+            if (score > bestScore) {
+                bestScore = score;
+                best = child;
+            }
+        }
+        return best;
+    }
+
+
     /**
      * @return the leaf node for expansion
      */
     MCTreeNode select(){
-        // TODO implement select logic
-        return null;
+        MCTreeNode node = tree;
+        while (isFullyExpanded(node)) {
+            node = selectChildWithMaxUCB1(node);
+        }
+        return node;
+    }
+
+    // Helper method to check if a node is fully expanded for expansion
+    boolean isFullyExpanded(MCTreeNode node) {
+        return node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size();
     }
 
     /**
      * @param leaf - the node that needs expansion
      * @return the new node (leaf) that needs simulation
      */
-    MCTreeNode expand(MCTreeNode leaf){
-        // TODO implement expand logic
-        return null;
+
+    // We need a copy of the board to apply the move and get the resulting state for the new child node
+    // Without it we would be modifying the board state of the parent node which would affect the rest of the tree
+    Board getResultingState(Board current, int[] action) {
+        
+        // copies the parent board
+        Board copy = new Board(current.boardSize);
+        for (int i = 0; i < current.boardSize; i++)
+            for (int j = 0; j < current.boardSize; j++)
+                copy.getPlayingBoard()[i][j] = current.getPlayingBoard()[i][j];
+
+        // applies the move on the copy using existing Othello logic
+        Othello othello = new Othello(copy);
+        othello.setPiece(action[0], action[1], color);
+        return copy;
     }
+
+    MCTreeNode expand(MCTreeNode leaf){
+        // gets all legal moves from the current board state
+        List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
+
+        // picks a random action
+        int[] action = legal.get(new Random().nextInt(legal.size()));
+
+        // applies the action to get the resulting board state
+        Board childState = getResultingState(leaf.getBoard(), action);
+
+        // creates a new child node with the resulting state and parent reference
+        MCTreeNode child = new MCTreeNode(childState, leaf);
+
+        // adds the child to the tree
+        leaf.addChild(child);
+        return child;
+    }  
 
     /**
      * @param child - the expanded new node to run a simulation on

@@ -13,8 +13,9 @@ public class MCTreeNode {
     private MCTreeNode parent;
     private Board board;
 
-    public MCTreeNode(){
-        this.parent = null;
+    public MCTreeNode(Board board, MCTreeNode parent){
+        this.board = board;
+        this.parent = parent;
         this.children = new ArrayList<>();
     }
 
