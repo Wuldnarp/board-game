@@ -30,6 +30,22 @@ public class Board {
         playingBoard[middle][middle - 1] = Cell.BLACK;
     }
 
+    // Deep copy constructor
+    public Board(Board other) {
+        this.boardSize = other.boardSize;
+        this.playingBoard = new Cell[boardSize][boardSize];
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                this.playingBoard[i][j] = other.playingBoard[i][j];// assumes Cell also has a copy constructor
+            }
+        }
+    }
+
+    // Copy factory method
+    public Board copy() {
+        return new Board(this);
+    }
+
     public Cell[][] getPlayingBoard() {
         return playingBoard;
     }
