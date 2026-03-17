@@ -51,7 +51,7 @@ public class MonteCarlo implements Agent {
             return Double.POSITIVE_INFINITY; 
         }
         double C = 1.4;
-        return (node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
+        return ((double) node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
     }
 
     /**
@@ -65,8 +65,9 @@ public class MonteCarlo implements Agent {
         return node;
     }
 
+    // Helper method to check if a node is fully expanded for expansion
     boolean isFullyExpanded(MCTreeNode node) {
-        return node.getChildren().size() == node.getState().getAllLegalMoves(node.getActor()).size();
+        return node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size();
     }
 
     /**
@@ -74,11 +75,8 @@ public class MonteCarlo implements Agent {
      * @return the new node (leaf) that needs simulation
      */
     MCTreeNode expand(MCTreeNode leaf){
-        if (isTerminal(leaf.getState())) {
-            return leaf;
-        }
         Action action = getRandomUntriedAction(leaf);
-        Board childState = getResultingState(leaf.getState(), action);
+        Board childState = getResultingState(leaf.getBoard(), action);
         MCTreeNode child = new MCTreeNode(childState, leaf);
         leaf.addChild(child);
         return child;
