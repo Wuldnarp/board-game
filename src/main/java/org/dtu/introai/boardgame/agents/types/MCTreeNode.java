@@ -12,11 +12,21 @@ public class MCTreeNode {
     private ArrayList<MCTreeNode> children;
     private MCTreeNode parent;
     private Board board;
+    private int[] move;
 
-    public MCTreeNode(Board board, MCTreeNode parent){
+    public MCTreeNode(Board board, MCTreeNode parent, int[] move){
         this.board = board;
         this.parent = parent;
+        this.move = move;
         this.children = new ArrayList<>();
+    }
+
+    public MCTreeNode(Board board, MCTreeNode parent){
+        this(board, parent, null);
+    }
+
+    public int[] getMove() {
+        return move;
     }
 
     public ArrayList<MCTreeNode> getChildren() {

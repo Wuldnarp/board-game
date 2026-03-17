@@ -1,5 +1,6 @@
 package org.dtu.introai.boardgame.agents;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
@@ -22,7 +23,7 @@ public class MonteCarlo implements Agent {
 
     @Override
     public int[] act(Board board) {
-        //TODO tree initialization needs to go to constructor, here it should find a node in existing tree if it exist and play from there or open a new node
+        this.tree = new MCTreeNode(board, null);
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis() - start < durationMs){ /*MISSING implement is the game over as part of the loop condition */
             MCTreeNode selectedLeaf = select();
@@ -71,7 +72,7 @@ public class MonteCarlo implements Agent {
      */
     MCTreeNode select(){
         MCTreeNode node = tree;
-        while (node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
+        while (!node.getChildren().isEmpty() && node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
             node = selectChildWithHighestUpperConfidentBound(node);
         }
         return node;
@@ -84,6 +85,7 @@ public class MonteCarlo implements Agent {
 
     MCTreeNode expand(MCTreeNode leaf){
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
+        if (legal.isEmpty()) return leaf; // terminal node, nothing to expand
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
         // Copies the board so we don't destroy the parent board
@@ -93,7 +95,7 @@ public class MonteCarlo implements Agent {
         Othello othello = new Othello(copy,null);
         othello.setPiece(action[0], action[1], color);
 
-        MCTreeNode child = new MCTreeNode(copy, leaf);
+        MCTreeNode child = new MCTreeNode(copy, leaf, action);
         leaf.addChild(child);
         return child;
     }
@@ -154,7 +156,9 @@ public class MonteCarlo implements Agent {
      * @return the chosen action
      */
     int[] getAction(){
-        // TODO implement
-        return new int[2];
+        return tree.getChildren().stream()
+            .max(Comparator.comparingInt(MCTreeNode::getVisits))
+            .get()
+            .getMove();
     }
 }
