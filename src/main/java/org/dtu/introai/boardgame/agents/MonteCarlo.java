@@ -59,7 +59,7 @@ public class MonteCarlo implements Agent {
 
         for (MCTreeNode child : node.getChildren()) {
             double score = UCB(child, node);
-            // update best if this child has a higher score
+            // updates best if this child has a higher score
             if (score > bestScore) {
                 bestScore = score;
                 best = child;
@@ -94,32 +94,32 @@ public class MonteCarlo implements Agent {
     // Without it we would be modifying the board state of the parent node which would affect the rest of the tree
     Board getResultingState(Board current, int[] action) {
         
-        // copy the parent board
+        // copies the parent board
         Board copy = new Board(current.boardSize);
         for (int i = 0; i < current.boardSize; i++)
             for (int j = 0; j < current.boardSize; j++)
                 copy.getPlayingBoard()[i][j] = current.getPlayingBoard()[i][j];
 
-        // apply the move on the copy using existing Othello logic
+        // applies the move on the copy using existing Othello logic
         Othello othello = new Othello(copy);
         othello.setPiece(action[0], action[1], color);
         return copy;
     }
 
     MCTreeNode expand(MCTreeNode leaf){
-        // get all legal moves from the current board state
+        // gets all legal moves from the current board state
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
 
-        // pick a random action
+        // picks a random action
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
-        // apply the action to get the resulting board state
+        // applies the action to get the resulting board state
         Board childState = getResultingState(leaf.getBoard(), action);
 
-        // create a new child node with the resulting state and parent reference
+        // creates a new child node with the resulting state and parent reference
         MCTreeNode child = new MCTreeNode(childState, leaf);
 
-        // add the child to the tree
+        // adds the child to the tree
         leaf.addChild(child);
         return child;
     }  
