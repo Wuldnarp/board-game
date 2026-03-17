@@ -36,7 +36,7 @@ public class MonteCarlo implements Agent {
 
     // Helper method for selecting the child with the highest UCB1 value
     // From the book page 209.
-    double UCB(MCTreeNode node, MCTreeNode parent) {
+    double upperConfidentBound(MCTreeNode node, MCTreeNode parent) {
         // always explore unvisited nodes first
         if (node.getVisits() == 0) {
             return Double.POSITIVE_INFINITY; 
@@ -50,13 +50,13 @@ public class MonteCarlo implements Agent {
         return ((double) node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
     }
 
-    // selects the child with the highest UCB1 value
-    MCTreeNode selectChildWithHighestUCB1(MCTreeNode node) {
+    // selects the child with the highest upper confident bound value
+    MCTreeNode selectChildWithHighestUpperConfidentBound(MCTreeNode node) {
         MCTreeNode best = null;
         double bestScore = Double.NEGATIVE_INFINITY;
 
         for (MCTreeNode child : node.getChildren()) {
-            double score = UCB(child, node);
+            double score = upperConfidentBound(child, node);
             // updates best if this child has a higher score
             if (score > bestScore) {
                 bestScore = score;
@@ -73,7 +73,7 @@ public class MonteCarlo implements Agent {
     MCTreeNode select(){
         MCTreeNode node = tree;
         while (node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
-            node = selectChildWithHighestUCB1(node);
+            node = selectChildWithHighestUpperConfidentBound(node);
         }
         return node;
     }
