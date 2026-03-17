@@ -2,17 +2,11 @@ package org.dtu.introai.boardgame.agents;
 
 import java.util.List;
 import java.util.Random;
-
-// import javax.swing.Action;
-
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
 import org.dtu.introai.boardgame.api.Agent;
 import org.dtu.introai.boardgame.othello.Othello;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
-
-import java.util.List;
-import java.util.Random;
 
 public class MonteCarlo implements Agent {
 
@@ -88,31 +82,17 @@ public class MonteCarlo implements Agent {
      * @return the new node (leaf) that needs simulation
      */
 
-    // We need a copy of the board to apply the move and get the resulting state for the new child node
-    // Without it we would be modifying the board state of the parent node which would affect the rest of the tree
-    Board getNewBoardState(Board current, int[] action) {
-        
-        // copies the parent board
-        Board copy = new Board(current.boardSize);
-        for (int i = 0; i < current.boardSize; i++)
-            for (int j = 0; j < current.boardSize; j++)
-                copy.getPlayingBoard()[i][j] = current.getPlayingBoard()[i][j];
-
-        // applies the move on the copy using existing Othello logic
-        Othello othello = new Othello(copy);
-        othello.setPiece(action[0], action[1], color);
-        return copy;
-    }
-
     MCTreeNode expand(MCTreeNode leaf){
-        // gets all legal moves from the current board state
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
-
-        // picks a random action
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
+        // Makes the move using the Othello class already in place
+        Othello othello = new Othello(leaf.getBoard());
+        othello.setPiece(action[0], action[1], color);
+
+        // returns the resulting board state
         // applies the action to get the resulting board state
-        Board childState = getNewBoardState(leaf.getBoard(), action);
+        Board childState = othello.getBoard();
 
         // creates a new child node with the resulting state and parent reference
         MCTreeNode child = new MCTreeNode(childState, leaf);
