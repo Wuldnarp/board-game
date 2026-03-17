@@ -97,11 +97,10 @@ public class GameFrame extends JFrame {
     }
 
     Supplier<int[]> agentLoop(){
-        int[] move = agentMap.get(othello.currant).act(othello.getBoard());
         return new Supplier<int[]>() {
             @Override
             public int[] get() {
-                return move;
+                return agentMap.get(othello.currant).act(othello.getBoard());
             }
         };
     }
