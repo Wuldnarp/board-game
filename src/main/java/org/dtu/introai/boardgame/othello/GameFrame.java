@@ -46,7 +46,7 @@ public class GameFrame extends JFrame {
             supplyMap.put(Cell.WHITE,agentLoop());
         }
 
-        this.othello = new Othello(new Board(8),agentMap,supplyMap);
+        this.othello = new Othello(new Board(8),supplyMap);
         this.gamePanel = new GamePanel(othello);
         this.textArea = new TextArea();
 

@@ -1,6 +1,5 @@
 package org.dtu.introai.boardgame.othello;
 
-import org.dtu.introai.boardgame.api.Agent;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
 import org.dtu.introai.boardgame.util.Directions;
@@ -14,19 +13,17 @@ import java.util.function.Supplier;
 public class Othello {
 
     final Board board;
-    HashMap<Cell, Agent> agentMap;
     HashMap<Cell, Supplier<int[]>> supplyMap;
     Cell current;
     boolean skippedLastAgent;
     boolean complete;
     Cell winner;
 
-    public Othello(Board board, HashMap<Cell, Agent> agentMap, HashMap<Cell, Supplier<int[]>> supplyMap) {
+    public Othello(Board board, HashMap<Cell, Supplier<int[]>> supplyMap) {
         this.board = board;
         this.complete = false;
         this.winner = Cell.EMPTY;
 
-        this.agentMap = agentMap;
         this.supplyMap = supplyMap;
 
         this.current = Cell.BLACK;
