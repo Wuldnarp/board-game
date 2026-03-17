@@ -27,6 +27,21 @@ public class MonteCarlo implements Agent {
         return new int[0];
     }
 
+    //selection node with the highest UCB1 value
+    MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
+    MCTreeNode best = null;
+    double bestScore;
+
+    for (MCTreeNode child : node.getChildren()) {
+        double score = UCB(child, node);
+        if (score > bestScore) {
+            bestScore = score;
+            best = child;
+        }
+    }
+    return best;
+}
+
     // Helper method for selecting the child with the highest UCB1 value
     // From the book page 209.
     double UCB(MCTreeNode node, MCTreeNode parent) {
