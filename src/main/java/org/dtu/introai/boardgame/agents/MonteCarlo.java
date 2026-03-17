@@ -10,9 +10,11 @@ import org.dtu.introai.boardgame.util.Cell;
 public class MonteCarlo implements Agent {
 
     private MCTreeNode tree;
+    private Cell color;
 
-    public MonteCarlo(){
+    public MonteCarlo(Cell color){
         this.tree = new MCTreeNode();
+        this.color = color;
     }
 
     @Override
