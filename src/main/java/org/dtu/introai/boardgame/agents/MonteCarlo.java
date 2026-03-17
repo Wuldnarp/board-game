@@ -18,7 +18,6 @@ public class MonteCarlo implements Agent {
     private long durationMs;
 
     public MonteCarlo(Cell color, long durationMs){
-        this.tree = new MCTreeNode();
         this.color = color;
         this.durationMs = durationMs;
     }
@@ -40,20 +39,27 @@ public class MonteCarlo implements Agent {
     // Helper method for selecting the child with the highest UCB1 value
     // From the book page 209.
     double UCB(MCTreeNode node, MCTreeNode parent) {
+        // always explore unvisited nodes first
         if (node.getVisits() == 0) {
             return Double.POSITIVE_INFINITY; 
         }
-        double C = 1.4;
+
+        // exploration constant, squareroot (2) from book example
+        double C = 1.4; 
+
+        // exploitation term: win rate of this node
+        // exploration term: prefer nodes visited less relative to parent
         return ((double) node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
     }
 
-    //selection node with the highest UCB1 value
+    // selects the child with the highest UCB1 value
     MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
-    MCTreeNode best = null;
-    double bestScore = Double.NEGATIVE_INFINITY;
+        MCTreeNode best = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
 
         for (MCTreeNode child : node.getChildren()) {
             double score = UCB(child, node);
+            // update best if this child has a higher score
             if (score > bestScore) {
                 bestScore = score;
                 best = child;
@@ -61,6 +67,7 @@ public class MonteCarlo implements Agent {
         }
         return best;
     }
+
 
     /**
      * @return the leaf node for expansion
@@ -86,7 +93,8 @@ public class MonteCarlo implements Agent {
     // We need a copy of the board to apply the move and get the resulting state for the new child node
     // Without it we would be modifying the board state of the parent node which would affect the rest of the tree
     Board getResultingState(Board current, int[] action) {
-        // copy the current board
+        
+        // copy the parent board
         Board copy = new Board(current.boardSize);
         for (int i = 0; i < current.boardSize; i++)
             for (int j = 0; j < current.boardSize; j++)
@@ -101,12 +109,16 @@ public class MonteCarlo implements Agent {
     MCTreeNode expand(MCTreeNode leaf){
         // get all legal moves from the current board state
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
+
         // pick a random action
         int[] action = legal.get(new Random().nextInt(legal.size()));
+
         // apply the action to get the resulting board state
         Board childState = getResultingState(leaf.getBoard(), action);
+
         // create a new child node with the resulting state and parent reference
         MCTreeNode child = new MCTreeNode(childState, leaf);
+
         // add the child to the tree
         leaf.addChild(child);
         return child;
