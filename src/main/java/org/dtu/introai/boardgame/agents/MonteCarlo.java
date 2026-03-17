@@ -32,7 +32,7 @@ public class MonteCarlo implements Agent {
     //selection node with the highest UCB1 value
     MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
     MCTreeNode best = null;
-    double bestScore = 0;
+    double bestScore = Double.NEGATIVE_INFINITY;
 
     for (MCTreeNode child : node.getChildren()) {
         double score = UCB(child, node);
@@ -59,8 +59,14 @@ public class MonteCarlo implements Agent {
      */
     MCTreeNode select(){
         MCTreeNode node = tree;
-        node = selectChildWithMaxUCB1(node);
+        while (isFullyExpanded(node)) {
+            node = selectChildWithMaxUCB1(node);
+        }
         return node;
+    }
+
+    boolean isFullyExpanded(MCTreeNode node) {
+        return node.getChildren().size() == node.getState().getAllLegalMoves(node.getActor()).size();
     }
 
     /**
