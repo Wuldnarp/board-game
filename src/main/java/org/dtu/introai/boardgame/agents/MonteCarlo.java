@@ -157,7 +157,7 @@ public class MonteCarlo implements Agent {
     int[] getAction(){
         return tree.getChildren().stream()
             .max(Comparator.comparingInt(MCTreeNode::getVisits))
-            .get()
+            .orElseThrow()
             .getMove();
     }
 }
