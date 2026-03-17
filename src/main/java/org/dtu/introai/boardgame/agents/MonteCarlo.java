@@ -88,10 +88,7 @@ public class MonteCarlo implements Agent {
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
         // Copies the board so we don't destroy the parent board
-        Board copy = new Board(leaf.getBoard().boardSize);
-        for (int i = 0; i < copy.boardSize; i++)
-            for (int j = 0; j < copy.boardSize; j++)
-                copy.getPlayingBoard()[i][j] = leaf.getBoard().getPlayingBoard()[i][j];
+        Board copy = new Board(leaf.getBoard());
 
         // Applies the move on the copy
         Othello othello = new Othello(copy);
@@ -107,9 +104,7 @@ public class MonteCarlo implements Agent {
      * @return the winder of the simulation
      */
     Cell simulate(MCTreeNode child){
-        //todo: save played steps for later iterations as well
         Random r = new Random();
-
         Othello simulatedGame = new Othello(child.getBoard());
         Cell playerCell = color; //always start with the play of the current color
         int[] move;
@@ -124,6 +119,9 @@ public class MonteCarlo implements Agent {
             move = moves.get(r.nextInt(moves.size())); //pick a random move
             simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
             board = simulatedGame.getBoard(); //get new board
+            MCTreeNode newChild = new MCTreeNode(new Board(board), child);
+            child.addChild(newChild);
+            child = newChild;
         } while(simulatedGame.isComplete()); //todo finish while loop when game is over
         return simulatedGame.getWiner();
     }
