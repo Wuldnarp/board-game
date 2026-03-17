@@ -1,9 +1,13 @@
 package org.dtu.introai.boardgame.agents;
 
-import javax.swing.Action;
+import java.util.List;
+import java.util.Random;
+
+// import javax.swing.Action;
 
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
 import org.dtu.introai.boardgame.api.Agent;
+import org.dtu.introai.boardgame.othello.Othello;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
 
@@ -13,36 +17,20 @@ public class MonteCarlo implements Agent {
     private Cell color;
 
     public MonteCarlo(Cell color){
-        this.tree = new MCTreeNode();
         this.color = color;
     }
 
     @Override
     public int[] act(Board board) {
 
+        this.tree = new MCTreeNode(board, null);
         while(true){
             MCTreeNode selectedLeaf = select();
             MCTreeNode child = expand(selectedLeaf);
             Cell result = simulate(child);
             backPropagate(result,child);
         }
-        return new int[0];
     }
-
-    //selection node with the highest UCB1 value
-    MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
-    MCTreeNode best = null;
-    double bestScore = Double.NEGATIVE_INFINITY;
-
-    for (MCTreeNode child : node.getChildren()) {
-        double score = UCB(child, node);
-        if (score > bestScore) {
-            bestScore = score;
-            best = child;
-        }
-    }
-    return best;
-}
 
     // Helper method for selecting the child with the highest UCB1 value
     // From the book page 209.
@@ -52,6 +40,21 @@ public class MonteCarlo implements Agent {
         }
         double C = 1.4;
         return ((double) node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
+    }
+
+    //selection node with the highest UCB1 value
+    MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
+    MCTreeNode best = null;
+    double bestScore = Double.NEGATIVE_INFINITY;
+
+        for (MCTreeNode child : node.getChildren()) {
+            double score = UCB(child, node);
+            if (score > bestScore) {
+                bestScore = score;
+                best = child;
+            }
+        }
+        return best;
     }
 
     /**
@@ -74,13 +77,35 @@ public class MonteCarlo implements Agent {
      * @param leaf - the node that needs expansion
      * @return the new node (leaf) that needs simulation
      */
+
+    // We need a copy of the board to apply the move and get the resulting state for the new child node
+    // Without it we would be modifying the board state of the parent node which would affect the rest of the tree
+    Board getResultingState(Board current, int[] action) {
+        // copy the current board
+        Board copy = new Board(current.boardSize);
+        for (int i = 0; i < current.boardSize; i++)
+            for (int j = 0; j < current.boardSize; j++)
+                copy.getPlayingBoard()[i][j] = current.getPlayingBoard()[i][j];
+
+        // apply the move on the copy using existing Othello logic
+        Othello othello = new Othello(copy);
+        othello.setPiece(action[0], action[1], color);
+        return copy;
+    }
+
     MCTreeNode expand(MCTreeNode leaf){
-        Action action = getRandomUntriedAction(leaf);
+        // get all legal moves from the current board state
+        List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
+        // pick a random action
+        int[] action = legal.get(new Random().nextInt(legal.size()));
+        // apply the action to get the resulting board state
         Board childState = getResultingState(leaf.getBoard(), action);
+        // create a new child node with the resulting state and parent reference
         MCTreeNode child = new MCTreeNode(childState, leaf);
+        // add the child to the tree
         leaf.addChild(child);
         return child;
-    }
+    }  
 
     /**
      * @param child - the expanded new node to run a simulation on
