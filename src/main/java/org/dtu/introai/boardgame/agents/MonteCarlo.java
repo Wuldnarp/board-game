@@ -61,7 +61,19 @@ public class MonteCarlo implements Agent {
      * @param child - the given node the simulation was run on
      */
     void backPropagate(Cell result, MCTreeNode child){
-        // TODO implement back propegation
+        MCTreeNode curNode = child;
+        
+        while(curNode != null){
+            curNode.incrementVisit();
+            
+            if(result == color){
+                curNode.incrementWins();
+            } else if (result != Cell.EMPTY) {
+                curNode.incrementLosses();
+            }
+
+            curNode = curNode.getParent();
+        }
     }
 
     /**
