@@ -27,7 +27,7 @@ class MonteCarloTest {
         MCTreeNode child = new MCTreeNode(board, parent);
         parent.incrementVisit();
 
-        assertEquals(Double.POSITIVE_INFINITY, mc.UCB(child, parent));
+        assertEquals(Double.POSITIVE_INFINITY, mc.upperConfidentBound(child, parent));
     }
 
     @Test
@@ -38,14 +38,14 @@ class MonteCarloTest {
         child.incrementVisit();
         child.incrementWins();
 
-        double result = mc.UCB(child, parent);
+        double result = mc.upperConfidentBound(child, parent);
         assertTrue(Double.isFinite(result));
     }
 
-    // --- selectChildWithHighestUCB1 ---
+    // --- selectChildWithHighestUpperConfidentBound ---
 
     @Test
-    void selectChildWithHighestUCB1_returnsChildWithHighestScore() {
+    void selectChildWithHighestUpperConfidentBound_returnsChildWithHighestScore() {
         MCTreeNode parent = new MCTreeNode(board, null);
         parent.incrementVisit();
         parent.incrementVisit();
@@ -62,7 +62,7 @@ class MonteCarloTest {
         parent.addChild(child1);
         parent.addChild(child2);
 
-        MCTreeNode best = mc.selectChildWithHighestUCB1(parent);
+        MCTreeNode best = mc.selectChildWithHighestUpperConfidentBound(parent);
         assertEquals(child2, best);
     }
 
