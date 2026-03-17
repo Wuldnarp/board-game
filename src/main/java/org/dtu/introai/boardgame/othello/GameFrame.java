@@ -79,6 +79,8 @@ public class GameFrame extends JFrame {
             currant = reverse(currant);
         }
 
+        othello.setComplete(true);
+        printFinishText();
         System.out.println("game has ended");
     }
 
@@ -119,6 +121,16 @@ public class GameFrame extends JFrame {
                             .collect(Collectors.joining(", ", "[", "]")) +"\n"+
                     "Score: " + othello.board.countPieces()
             )
+        );
+    }
+
+    void printFinishText(){
+        SwingUtilities.invokeLater(()->
+                textArea.setText(
+                        "The game is over \n" +
+                        "The winder is: " + othello.getWinder() + "\n" +
+                        "The Final score is: " + othello.board.countPieces()
+                )
         );
     }
 
