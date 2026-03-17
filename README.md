@@ -4,7 +4,12 @@
 * Java 21 
 * Maven
 
-## Running the Game
+### Install the game 
 ```bash
-mvn clean install && mvn exec:java
+mvn clean install
+```
+
+### Run the game
+```bash
+mvn exec:java
 ```
