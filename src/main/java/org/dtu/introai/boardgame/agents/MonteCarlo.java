@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
@@ -130,10 +131,16 @@ public class MonteCarlo implements Agent {
             }
         };
 
+        Consumer<Object> consumer = new Consumer<Object>() {
+            @Override
+            public void accept(Object o) {
+
+            }
+        };
         supplyMap.put(Cell.WHITE, supplyLoopWhite);
         supplyMap.put(Cell.BLACK, supplyLoopBlack);
         simulatedGame.setSupplyMap(supplyMap);
-        simulatedGame.gameLoop(null, null);
+        simulatedGame.gameLoop(consumer, consumer);
         return simulatedGame.getWinner();
 
 //        Random r = new Random();

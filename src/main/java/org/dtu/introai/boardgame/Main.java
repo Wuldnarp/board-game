@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        new GameFrame(new MonteCarlo(Cell.BLACK, 1000), new Player()).start();
+        new GameFrame(new MonteCarlo(Cell.BLACK, 500), new MonteCarlo(Cell.WHITE, 2000)).start();
 
     }
 }
