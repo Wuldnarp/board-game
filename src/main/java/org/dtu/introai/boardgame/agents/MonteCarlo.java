@@ -1,12 +1,20 @@
 package org.dtu.introai.boardgame.agents;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
+
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
 import org.dtu.introai.boardgame.api.Agent;
 import org.dtu.introai.boardgame.othello.Othello;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
+
+import javax.swing.*;
 
 public class MonteCarlo implements Agent {
 
@@ -99,31 +107,75 @@ public class MonteCarlo implements Agent {
         return child;
     }
 
+    Supplier<int[]> simulationLoop(){
+        return new Supplier<int[]>() {
+            @Override
+            public int[] get() {
+                SwingUtilities.invokeLater(() -> gamePanel.showAvailable(othello.current));
+                gamePanel.buttonPressed = new CompletableFuture<>();
+                int[] move = null;
+                try {
+                    move = gamePanel.getInput();
+                } catch (ExecutionException | InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return move;
+            }
+        };
+    }
+
     /**
      * @param child - the expanded new node to run a simulation on
      * @return the winder of the simulation
      */
     Cell simulate(MCTreeNode child){
-        Random r = new Random();
-        Othello simulatedGame = new Othello(child.getBoard(),null);
-        Cell playerCell = color; //always start with the play of the current color
-        int[] move;
-        List<int[]> moves;
-        Board board = child.getBoard();
-        do{ //play game untill its finished
-            moves = board.getAllLegalMoves(playerCell); //get all posible moves
-            playerCell = color == Cell.WHITE ? Cell.BLACK : Cell.WHITE; //reverse player cell
-            if(moves.isEmpty()){ //if empty go to next loop, where if game is ended will be evaluated as well
-                continue;
+
+        HashMap<Cell, Supplier<int[]>> supplyMap = new HashMap<>();
+
+        Othello simulatedGame = new Othello(child.getBoard(), supplyMap);
+
+        Supplier<int[]> supplyLoopWhite = new Supplier<int[]>() {
+            @Override
+            public int[] get() {
+                List<int[]> moves = simulatedGame.getBoard().getAllLegalMoves(Cell.WHITE);
+                return moves.get(new Random().nextInt(moves.size()));
             }
-            move = moves.get(r.nextInt(moves.size())); //pick a random move
-            simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
-            board = simulatedGame.getBoard(); //get new board
-            MCTreeNode newChild = new MCTreeNode(new Board(board), child);
-            child.addChild(newChild);
-            child = newChild;
-        } while(simulatedGame.isComplete()); //todo finish while loop when game is over
+        };
+
+        Supplier<int[]> supplyLoopBlack = new Supplier<int[]>() {
+            @Override
+            public int[] get() {
+                List<int[]> moves = simulatedGame.getBoard().getAllLegalMoves(Cell.BLACK);
+                return moves.get(new Random().nextInt(moves.size()));
+            }
+        };
+
+        supplyMap.put(Cell.WHITE, supplyLoopWhite);
+        supplyMap.put(Cell.BLACK, supplyLoopBlack);
+        simulatedGame.setSupplyMap(supplyMap);
+        simulatedGame.gameLoop(null, null);
         return simulatedGame.getWinner();
+
+//        Random r = new Random();
+//        Othello simulatedGame = new Othello(child.getBoard(),null);
+//        Cell playerCell = color; //always start with the play of the current color
+//        int[] move;
+//        List<int[]> moves;
+//        Board board = child.getBoard();
+//        do{ //play game untill its finished
+//            moves = board.getAllLegalMoves(playerCell); //get all posible moves
+//            playerCell = color == Cell.WHITE ? Cell.BLACK : Cell.WHITE; //reverse player cell
+//            if(moves.isEmpty()){ //if empty go to next loop, where if game is ended will be evaluated as well
+//                continue;
+//            }
+//            move = moves.get(r.nextInt(moves.size())); //pick a random move
+//            simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
+//            board = simulatedGame.getBoard(); //get new board
+//            MCTreeNode newChild = new MCTreeNode(new Board(board), child);
+//            child.addChild(newChild);
+//            child = newChild;
+//        } while(simulatedGame.isComplete()); //todo finish while loop when game is over
+//        return simulatedGame.getWinner();
     }
 
     /**

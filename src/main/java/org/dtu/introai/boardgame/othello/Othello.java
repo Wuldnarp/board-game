@@ -122,4 +122,8 @@ public class Othello {
     private Cell reverse(Cell cell){
         return cell.equals(Cell.WHITE) ? Cell.BLACK : Cell.WHITE;
     }
+
+    public void setSupplyMap(HashMap<Cell, Supplier<int[]>> supplyMap) {
+        this.supplyMap = supplyMap;
+    }
 }
