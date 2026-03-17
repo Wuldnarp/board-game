@@ -5,13 +5,18 @@ import org.dtu.introai.boardgame.util.Cell;
 import org.dtu.introai.boardgame.util.Directions;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Othello {
 
     final Board board;
+    boolean complete;
+    Cell winder;
 
     public Othello(Board board) {
         this.board = board;
+        this.complete = false;
+        this.winder = Cell.EMPTY;
     }
 
     /**
@@ -51,6 +56,25 @@ public class Othello {
             }
         }
         return true;
+    }
+
+    public void setComplete(boolean complete) {
+        setWinder();
+        this.complete = complete;
+    }
+
+    public void setWinder() {
+        this.winder = board.countPieces().entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElseThrow();
+    }
+
+    public Cell getWinder() {
+        return winder;
+    }
+
+    public boolean isComplete() {
+        return complete;
     }
 
     public Board getBoard() {
