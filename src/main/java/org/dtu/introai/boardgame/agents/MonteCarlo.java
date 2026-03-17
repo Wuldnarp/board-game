@@ -18,7 +18,6 @@ public class MonteCarlo implements Agent {
     public MonteCarlo(Cell color, long durationMs){
         this.color = color;
         this.durationMs = durationMs;
-        this.tree = new MCTreeNode(new Board(8), null);
     }
 
     @Override
@@ -102,7 +101,7 @@ public class MonteCarlo implements Agent {
 
     /**
      * @param child - the expanded new node to run a simulation on
-     * @return the winder of the simulation
+     * @return the winner of the simulation
      */
     Cell simulate(MCTreeNode child){
         Random r = new Random();
@@ -128,7 +127,7 @@ public class MonteCarlo implements Agent {
     }
 
     /**
-     * @param result - the winder of the simulation
+     * @param result - the winner of the simulation
      * @param child - the given node the simulation was run on
      */
     void backPropagate(Cell result, MCTreeNode child){
