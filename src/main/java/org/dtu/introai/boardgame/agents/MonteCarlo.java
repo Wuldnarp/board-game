@@ -86,21 +86,20 @@ public class MonteCarlo implements Agent {
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
-        // Makes the move using the Othello class already in place
-        Othello othello = new Othello(leaf.getBoard());
+        // Copies the board so we don't destroy the parent board
+        Board copy = new Board(leaf.getBoard().boardSize);
+        for (int i = 0; i < copy.boardSize; i++)
+            for (int j = 0; j < copy.boardSize; j++)
+                copy.getPlayingBoard()[i][j] = leaf.getBoard().getPlayingBoard()[i][j];
+
+        // Applies the move on the copy
+        Othello othello = new Othello(copy);
         othello.setPiece(action[0], action[1], color);
 
-        // returns the resulting board state
-        // applies the action to get the resulting board state
-        Board childState = othello.getBoard();
-
-        // creates a new child node with the resulting state and parent reference
-        MCTreeNode child = new MCTreeNode(childState, leaf);
-
-        // adds the child to the tree
+        MCTreeNode child = new MCTreeNode(copy, leaf);
         leaf.addChild(child);
         return child;
-    }  
+    }
 
     /**
      * @param child - the expanded new node to run a simulation on
