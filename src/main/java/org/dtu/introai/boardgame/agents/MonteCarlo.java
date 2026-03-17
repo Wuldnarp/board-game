@@ -37,6 +37,9 @@ public class MonteCarlo implements Agent {
         return (node.getU() / node.getN()) + C * Math.sqrt(Math.log(parent.getN()) / node.getN());
     }
 
+    /**
+     * @return the leaf node for expansion
+     */
     MCTreeNode select(){
         // TODO implement select logic
         MCTreeNode node = tree;
@@ -46,6 +49,10 @@ public class MonteCarlo implements Agent {
         return node;
     }
 
+    /**
+     * @param leaf - the node that needs expansion
+     * @return the new node (leaf) that needs simulation
+     */
     MCTreeNode expand(MCTreeNode leaf){
         // TODO implement expand logic
         if (isTerminal(leaf.getState())) {
@@ -57,9 +64,20 @@ public class MonteCarlo implements Agent {
         leaf.addChild(child);
         return child;
     }
+
+    /**
+     * @param child - the expanded new node to run a simulation on
+     * @return the winder of the simulation
+     */
     Cell simulate(MCTreeNode child){
         // TODO implement simulation logic
+        return null;
     }
+
+    /**
+     * @param result - the winder of the simulation
+     * @param child - the given node the simulation was run on
+     */
     void backPropagate(Cell result, MCTreeNode child){
         // TODO implement back propegation
     }
