@@ -15,16 +15,20 @@ public class MonteCarlo implements Agent {
 
     private MCTreeNode tree;
     private Cell color;
+    private long durationMs;
 
-    public MonteCarlo(Cell color){
+    public MonteCarlo(Cell color, long durationMs){
+        this.tree = new MCTreeNode();
         this.color = color;
+        this.durationMs = durationMs;
     }
 
     @Override
     public int[] act(Board board) {
 
         this.tree = new MCTreeNode(board, null);
-        while(true){
+        long start = System.currentTimeMillis();
+        while(System.currentTimeMillis() - start < durationMs){
             MCTreeNode selectedLeaf = select();
             MCTreeNode child = expand(selectedLeaf);
             Cell result = simulate(child);
@@ -122,5 +126,14 @@ public class MonteCarlo implements Agent {
      */
     void backPropagate(Cell result, MCTreeNode child){
         // TODO implement back propegation
+    }
+
+    /**
+     * pick the action with the highest number of playouts
+     * @return the chosen action
+     */
+    int[] getAction(){
+        // TODO implement
+        return new int[2];
     }
 }

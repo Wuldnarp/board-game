@@ -10,12 +10,18 @@ public class MCTreeNode {
     private int losses;
     private int visits;
     private ArrayList<MCTreeNode> children;
+    private MCTreeNode parent;
     private Board board;
     private MCTreeNode parent;
 
+<<<<<<< HEAD
     public MCTreeNode(Board board, MCTreeNode parent){
         this.board = board;
         this.parent = parent;
+=======
+    public MCTreeNode(){
+        this.parent = null;
+>>>>>>> origin/master
         this.children = new ArrayList<>();
     }
 
