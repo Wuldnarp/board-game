@@ -17,12 +17,11 @@ public class MonteCarlo implements Agent {
     public MonteCarlo(Cell color, long durationMs){
         this.color = color;
         this.durationMs = durationMs;
+        this.tree = new MCTreeNode(new Board(8), null);
     }
 
     @Override
     public int[] act(Board board) {
-
-        this.tree = new MCTreeNode(board, null);
         //TODO tree initialization needs to go to constructor, here it should find a node in existing tree if it exist and play from there or open a new node
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis() - start < durationMs){ /*MISSING implement is the game over as part of the loop condition */
