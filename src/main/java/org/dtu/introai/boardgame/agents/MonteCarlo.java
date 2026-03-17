@@ -74,15 +74,10 @@ public class MonteCarlo implements Agent {
      */
     MCTreeNode select(){
         MCTreeNode node = tree;
-        while (isFullyExpanded(node)) {
+        while (node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
             node = selectChildWithMaxUCB1(node);
         }
         return node;
-    }
-
-    // Helper method to check if a node is fully expanded for expansion
-    boolean isFullyExpanded(MCTreeNode node) {
-        return node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size();
     }
 
     /**
