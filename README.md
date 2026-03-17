@@ -13,3 +13,8 @@ mvn clean install
 ```bash
 mvn exec:java
 ```
+
+## Run tests
+```bash
+mvn test
+```
