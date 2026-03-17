@@ -27,7 +27,7 @@ public class MonteCarlo implements Agent {
 
         this.tree = new MCTreeNode(board, null);
         long start = System.currentTimeMillis();
-        while(System.currentTimeMillis() - start < durationMs){
+        while(System.currentTimeMillis() - start < durationMs){ /*MISSING implement is the game over as part of the loop condition */
             MCTreeNode selectedLeaf = select();
             MCTreeNode child = expand(selectedLeaf);
             Cell result = simulate(child);
@@ -53,7 +53,7 @@ public class MonteCarlo implements Agent {
     }
 
     // selects the child with the highest UCB1 value
-    MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
+    MCTreeNode selectChildWithHighestUCB1(MCTreeNode node) {
         MCTreeNode best = null;
         double bestScore = Double.NEGATIVE_INFINITY;
 
@@ -75,7 +75,7 @@ public class MonteCarlo implements Agent {
     MCTreeNode select(){
         MCTreeNode node = tree;
         while (node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
-            node = selectChildWithMaxUCB1(node);
+            node = selectChildWithHighestUCB1(node);
         }
         return node;
     }
@@ -87,7 +87,7 @@ public class MonteCarlo implements Agent {
 
     // We need a copy of the board to apply the move and get the resulting state for the new child node
     // Without it we would be modifying the board state of the parent node which would affect the rest of the tree
-    Board getResultingState(Board current, int[] action) {
+    Board getNewBoardState(Board current, int[] action) {
         
         // copies the parent board
         Board copy = new Board(current.boardSize);
@@ -109,7 +109,7 @@ public class MonteCarlo implements Agent {
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
         // applies the action to get the resulting board state
-        Board childState = getResultingState(leaf.getBoard(), action);
+        Board childState = getNewBoardState(leaf.getBoard(), action);
 
         // creates a new child node with the resulting state and parent reference
         MCTreeNode child = new MCTreeNode(childState, leaf);
