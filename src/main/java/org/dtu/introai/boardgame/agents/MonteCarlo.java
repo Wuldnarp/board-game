@@ -32,7 +32,7 @@ public class MonteCarlo implements Agent {
     //selection node with the highest UCB1 value
     MCTreeNode selectChildWithMaxUCB1(MCTreeNode node) {
     MCTreeNode best = null;
-    double bestScore;
+    double bestScore = 0;
 
     for (MCTreeNode child : node.getChildren()) {
         double score = UCB(child, node);
@@ -47,22 +47,19 @@ public class MonteCarlo implements Agent {
     // Helper method for selecting the child with the highest UCB1 value
     // From the book page 209.
     double UCB(MCTreeNode node, MCTreeNode parent) {
-        if (node.getN() == 0) {
+        if (node.getVisits() == 0) {
             return Double.POSITIVE_INFINITY; 
         }
         double C = 1.4;
-        return (node.getU() / node.getN()) + C * Math.sqrt(Math.log(parent.getN()) / node.getN());
+        return (node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
     }
 
     /**
      * @return the leaf node for expansion
      */
     MCTreeNode select(){
-        // TODO implement select logic
         MCTreeNode node = tree;
-        while (isFullyExpanded(node) && !isTerminal(node)) {
-            node = selectChildWithMaxUCB1(node);
-        }
+        node = selectChildWithMaxUCB1(node);
         return node;
     }
 
@@ -71,7 +68,6 @@ public class MonteCarlo implements Agent {
      * @return the new node (leaf) that needs simulation
      */
     MCTreeNode expand(MCTreeNode leaf){
-        // TODO implement expand logic
         if (isTerminal(leaf.getState())) {
             return leaf;
         }
