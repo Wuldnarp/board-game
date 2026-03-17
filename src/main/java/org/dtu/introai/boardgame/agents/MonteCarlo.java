@@ -11,6 +11,9 @@ import org.dtu.introai.boardgame.othello.Othello;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
 
+import java.util.List;
+import java.util.Random;
+
 public class MonteCarlo implements Agent {
 
     private MCTreeNode tree;
@@ -124,7 +127,23 @@ public class MonteCarlo implements Agent {
      * @return the winder of the simulation
      */
     Cell simulate(MCTreeNode child){
-        // TODO implement simulation logic
+        Random r = new Random();
+        Othello simulatedGame = new Othello(child.getBoard());
+        Cell playerCell = color; //always start with the play of the current color
+        int[] move;
+        List<int[]> moves;
+        Board board = child.getBoard();
+        do{ //play game untill its finished
+            moves = board.getAllLegalMoves(playerCell); //get all posible moves
+            playerCell = color == Cell.WHITE ? Cell.BLACK : Cell.WHITE; //reverse player cell
+            if(moves.isEmpty()){ //if empty go to next loop, where if game is ended will be evaluated as well
+                continue;
+            }
+            move = moves.get(r.nextInt(moves.size())); //pick a random move
+            simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
+            board = simulatedGame.getBoard(); //get new board
+        } while(simulatedGame.isComplete()); //todo finish while loop when game is over
+
         return null;
     }
 
