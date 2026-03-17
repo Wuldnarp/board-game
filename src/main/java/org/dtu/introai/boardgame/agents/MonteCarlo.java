@@ -1,11 +1,9 @@
 package org.dtu.introai.boardgame.agents;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
 import org.dtu.introai.boardgame.agents.types.MCTreeNode;
@@ -29,9 +27,7 @@ public class MonteCarlo implements Agent {
 
     @Override
     public int[] act(Board board) {
-
         this.tree = new MCTreeNode(board, null);
-        //TODO tree initialization needs to go to constructor, here it should find a node in existing tree if it exist and play from there or open a new node
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis() - start < durationMs){ /*MISSING implement is the game over as part of the loop condition */
             MCTreeNode selectedLeaf = select();
@@ -80,7 +76,7 @@ public class MonteCarlo implements Agent {
      */
     MCTreeNode select(){
         MCTreeNode node = tree;
-        while (node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
+        while (!node.getChildren().isEmpty() && node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
             node = selectChildWithHighestUpperConfidentBound(node);
         }
         return node;
@@ -93,6 +89,7 @@ public class MonteCarlo implements Agent {
 
     MCTreeNode expand(MCTreeNode leaf){
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
+        if (legal.isEmpty()) return leaf; // terminal node, nothing to expand
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
         // Copies the board so we don't destroy the parent board
@@ -102,31 +99,14 @@ public class MonteCarlo implements Agent {
         Othello othello = new Othello(copy,null);
         othello.setPiece(action[0], action[1], color);
 
-        MCTreeNode child = new MCTreeNode(copy, leaf);
+        MCTreeNode child = new MCTreeNode(copy, leaf, action);
         leaf.addChild(child);
         return child;
     }
 
-    Supplier<int[]> simulationLoop(){
-        return new Supplier<int[]>() {
-            @Override
-            public int[] get() {
-                SwingUtilities.invokeLater(() -> gamePanel.showAvailable(othello.current));
-                gamePanel.buttonPressed = new CompletableFuture<>();
-                int[] move = null;
-                try {
-                    move = gamePanel.getInput();
-                } catch (ExecutionException | InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                return move;
-            }
-        };
-    }
-
     /**
      * @param child - the expanded new node to run a simulation on
-     * @return the winder of the simulation
+     * @return the winner of the simulation
      */
     Cell simulate(MCTreeNode child){
 
@@ -179,7 +159,7 @@ public class MonteCarlo implements Agent {
     }
 
     /**
-     * @param result - the winder of the simulation
+     * @param result - the winner of the simulation
      * @param child - the given node the simulation was run on
      */
     void backPropagate(Cell result, MCTreeNode child){
@@ -190,7 +170,7 @@ public class MonteCarlo implements Agent {
             
             if(result == color){
                 curNode.incrementWins();
-            } else if (result != Cell.EMPTY) {
+            } else if (result == reverse(color)) {
                 curNode.incrementLosses();
             }
 
@@ -198,12 +178,18 @@ public class MonteCarlo implements Agent {
         }
     }
 
+    private Cell reverse(Cell cell){
+        return cell.equals(Cell.WHITE) ? Cell.BLACK : Cell.WHITE;
+    }
+
     /**
      * pick the action with the highest number of playouts
      * @return the chosen action
      */
     int[] getAction(){
-        // TODO implement
-        return new int[2];
+        return tree.getChildren().stream()
+            .max(Comparator.comparingInt(MCTreeNode::getVisits))
+            .orElseThrow()
+            .getMove();
     }
 }
