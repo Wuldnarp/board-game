@@ -34,6 +34,7 @@ public class MonteCarlo implements Agent {
             Cell result = simulate(child);
             backPropagate(result,child);
         }
+        return getAction();
     }
 
     // Helper method for selecting the child with the highest UCB1 value
