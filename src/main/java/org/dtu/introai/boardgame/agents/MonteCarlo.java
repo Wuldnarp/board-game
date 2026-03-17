@@ -142,7 +142,7 @@ public class MonteCarlo implements Agent {
             move = moves.get(r.nextInt(moves.size())); //pick a random move
             simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
             board = simulatedGame.getBoard(); //get new board
-        } while(true); //todo finish while loop when game is over
+        } while(simulatedGame.isComplete()); //todo finish while loop when game is over
 
         return null;
     }
