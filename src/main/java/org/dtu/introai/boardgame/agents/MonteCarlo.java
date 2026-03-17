@@ -107,7 +107,9 @@ public class MonteCarlo implements Agent {
      * @return the winder of the simulation
      */
     Cell simulate(MCTreeNode child){
+        //todo: save played steps for later iterations as well
         Random r = new Random();
+
         Othello simulatedGame = new Othello(child.getBoard());
         Cell playerCell = color; //always start with the play of the current color
         int[] move;
@@ -123,8 +125,7 @@ public class MonteCarlo implements Agent {
             simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
             board = simulatedGame.getBoard(); //get new board
         } while(simulatedGame.isComplete()); //todo finish while loop when game is over
-
-        return null;
+        return simulatedGame.getWiner();
     }
 
     /**

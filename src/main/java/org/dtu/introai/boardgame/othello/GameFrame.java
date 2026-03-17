@@ -128,7 +128,7 @@ public class GameFrame extends JFrame {
         SwingUtilities.invokeLater(()->
                 textArea.setText(
                         "The game is over \n" +
-                        "The winder is: " + othello.getWinder() + "\n" +
+                        "The winder is: " + othello.getWiner() + "\n" +
                         "The Final score is: " + othello.board.countPieces()
                 )
         );
