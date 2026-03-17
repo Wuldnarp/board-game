@@ -112,7 +112,7 @@ public class MonteCarlo implements Agent {
         Board board = child.getBoard();
         do{ //play game untill its finished
             moves = board.getAllLegalMoves(playerCell); //get all posible moves
-            playerCell = color == Cell.WHITE ? Cell.BLACK : Cell.WHITE; //reverse player cell
+            playerCell = reverse(color); //reverse player cell
             if(moves.isEmpty()){ //if empty go to next loop, where if game is ended will be evaluated as well
                 continue;
             }
@@ -138,12 +138,16 @@ public class MonteCarlo implements Agent {
             
             if(result == color){
                 curNode.incrementWins();
-            } else if (result != Cell.EMPTY) {
+            } else if (result == reverse(color)) {
                 curNode.incrementLosses();
             }
 
             curNode = curNode.getParent();
         }
+    }
+
+    private Cell reverse(Cell cell){
+        return cell.equals(Cell.WHITE) ? Cell.BLACK : Cell.WHITE;
     }
 
     /**
