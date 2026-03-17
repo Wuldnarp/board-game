@@ -16,30 +16,30 @@ public class Othello {
     final Board board;
     HashMap<Cell, Agent> agentMap;
     HashMap<Cell, Supplier<int[]>> supplyMap;
-    Cell currant;
+    Cell current;
     boolean skippedLastAgent;
     boolean complete;
-    Cell winer;
+    Cell winner;
 
     public Othello(Board board, HashMap<Cell, Agent> agentMap, HashMap<Cell, Supplier<int[]>> supplyMap) {
         this.board = board;
         this.complete = false;
-        this.winer = Cell.EMPTY;
+        this.winner = Cell.EMPTY;
 
         this.agentMap = agentMap;
         this.supplyMap = supplyMap;
 
-        this.currant = Cell.BLACK;
+        this.current = Cell.BLACK;
     }
 
     public void gameLoop(Consumer<Object> updateCycle, Consumer<Object> endMessage){
 
         while (true){
-            if(board.getAllLegalMoves(currant).isEmpty()){
-                if(skippedLastAgent || board.getAllLegalMoves(reverse(currant)).isEmpty()){
+            if(board.getAllLegalMoves(current).isEmpty()){
+                if(skippedLastAgent || board.getAllLegalMoves(reverse(current)).isEmpty()){
                     break;
                 }
-                currant = reverse(currant);
+                current = reverse(current);
                 skippedLastAgent = true;
                 continue;
             }
@@ -47,13 +47,13 @@ public class Othello {
 
             boolean status;
             do {
-                int[] move = supplyMap.get(currant).get();
-                status = setPiece(move[0], move[1], currant);
+                int[] move = supplyMap.get(current).get();
+                status = setPiece(move[0], move[1], current);
             } while (!status);
 
             updateCycle.accept(null);
 
-            currant = reverse(currant);
+            current = reverse(current);
         }
 
         setComplete(true);
@@ -100,18 +100,18 @@ public class Othello {
     }
 
     public void setComplete(boolean complete) {
-        setWinder();
+        setWinner();
         this.complete = complete;
     }
 
-    public void setWinder() {
-        this.winer = board.countPieces().entrySet().stream()
+    public void setWinner() {
+        this.winner = board.countPieces().entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey).orElseThrow();
     }
 
-    public Cell getWiner() {
-        return winer;
+    public Cell getWinner() {
+        return winner;
     }
 
     public boolean isComplete() {

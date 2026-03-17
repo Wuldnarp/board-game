@@ -83,7 +83,7 @@ public class GameFrame extends JFrame {
         return new Supplier<int[]>() {
             @Override
             public int[] get() {
-                SwingUtilities.invokeLater(() -> gamePanel.showAvailable(othello.currant));
+                SwingUtilities.invokeLater(() -> gamePanel.showAvailable(othello.current));
                 gamePanel.buttonPressed = new CompletableFuture<>();
                 int[] move = null;
                 try {
@@ -100,7 +100,7 @@ public class GameFrame extends JFrame {
         return new Supplier<int[]>() {
             @Override
             public int[] get() {
-                return agentMap.get(othello.currant).act(othello.getBoard());
+                return agentMap.get(othello.current).act(othello.getBoard());
             }
         };
     }
@@ -108,8 +108,8 @@ public class GameFrame extends JFrame {
     void updateText(){
         SwingUtilities.invokeLater(()->
                 textArea.setText(
-                        "Currant player: " + othello.currant +"\n"+
-                                "Available moves: " + othello.board.getAllLegalMoves(othello.currant).stream()
+                        "Currant player: " + othello.current +"\n"+
+                                "Available moves: " + othello.board.getAllLegalMoves(othello.current).stream()
                                 .map(Arrays::toString)
                                 .collect(Collectors.joining(", ", "[", "]")) +"\n"+
                                 "Score: " + othello.board.countPieces()
@@ -124,7 +124,7 @@ public class GameFrame extends JFrame {
                 SwingUtilities.invokeLater(()->
                         textArea.setText(
                                 "The game is over \n" +
-                                        "The winder is: " + othello.getWiner() + "\n" +
+                                        "The winder is: " + othello.getWinner() + "\n" +
                                         "The Final score is: " + othello.board.countPieces()
                         )
                 );

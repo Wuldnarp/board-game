@@ -123,7 +123,7 @@ public class MonteCarlo implements Agent {
             child.addChild(newChild);
             child = newChild;
         } while(simulatedGame.isComplete()); //todo finish while loop when game is over
-        return simulatedGame.getWiner();
+        return simulatedGame.getWinner();
     }
 
     /**
