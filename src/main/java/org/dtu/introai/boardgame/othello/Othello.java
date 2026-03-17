@@ -1,22 +1,63 @@
 package org.dtu.introai.boardgame.othello;
 
+import org.dtu.introai.boardgame.api.Agent;
 import org.dtu.introai.boardgame.util.Board;
 import org.dtu.introai.boardgame.util.Cell;
 import org.dtu.introai.boardgame.util.Directions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Othello {
 
     final Board board;
+    HashMap<Cell, Agent> agentMap;
+    HashMap<Cell, Supplier<int[]>> supplyMap;
+    Cell currant;
+    boolean skippedLastAgent;
     boolean complete;
     Cell winer;
 
-    public Othello(Board board) {
+    public Othello(Board board, HashMap<Cell, Agent> agentMap, HashMap<Cell, Supplier<int[]>> supplyMap) {
         this.board = board;
         this.complete = false;
         this.winer = Cell.EMPTY;
+
+        this.agentMap = agentMap;
+        this.supplyMap = supplyMap;
+
+        this.currant = Cell.BLACK;
+    }
+
+    public void gameLoop(Consumer<Object> updateCycle, Consumer<Object> endMessage){
+
+        while (true){
+            if(board.getAllLegalMoves(currant).isEmpty()){
+                if(skippedLastAgent || board.getAllLegalMoves(reverse(currant)).isEmpty()){
+                    break;
+                }
+                currant = reverse(currant);
+                skippedLastAgent = true;
+                continue;
+            }
+            skippedLastAgent = false;
+
+            boolean status;
+            do {
+                int[] move = supplyMap.get(currant).get();
+                status = setPiece(move[0], move[1], currant);
+            } while (!status);
+
+            updateCycle.accept(null);
+
+            currant = reverse(currant);
+        }
+
+        setComplete(true);
+        endMessage.accept(null);
     }
 
     /**
@@ -79,5 +120,9 @@ public class Othello {
 
     public Board getBoard() {
         return board;
+    }
+
+    private Cell reverse(Cell cell){
+        return cell.equals(Cell.WHITE) ? Cell.BLACK : Cell.WHITE;
     }
 }

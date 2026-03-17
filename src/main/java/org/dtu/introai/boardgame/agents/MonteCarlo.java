@@ -91,7 +91,7 @@ public class MonteCarlo implements Agent {
         Board copy = new Board(leaf.getBoard());
 
         // Applies the move on the copy
-        Othello othello = new Othello(copy);
+        Othello othello = new Othello(copy,null,null);
         othello.setPiece(action[0], action[1], color);
 
         MCTreeNode child = new MCTreeNode(copy, leaf);
@@ -105,7 +105,7 @@ public class MonteCarlo implements Agent {
      */
     Cell simulate(MCTreeNode child){
         Random r = new Random();
-        Othello simulatedGame = new Othello(child.getBoard());
+        Othello simulatedGame = new Othello(child.getBoard(),null,null);
         Cell playerCell = color; //always start with the play of the current color
         int[] move;
         List<int[]> moves;
