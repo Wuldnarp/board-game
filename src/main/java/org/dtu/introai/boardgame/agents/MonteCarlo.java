@@ -77,8 +77,18 @@ public class MonteCarlo implements Agent {
      */
     MCTreeNode select(){
         MCTreeNode node = tree;
-        while (!node.getChildren().isEmpty() && node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
+        int depth = 0;
+
+        while (!node.getChildren().isEmpty()) {
+            Cell currentColor = (depth % 2 == 0) ? color : reverse(color);
+            int legalMoves = node.getBoard().getAllLegalMoves(currentColor).size();
+
+            if (node.getChildren().size() < legalMoves) {
+                return node; // not fully expanded yet
+            }
+
             node = selectChildWithHighestUpperConfidentBound(node);
+            depth++;
         }
         return node;
     }
@@ -87,18 +97,23 @@ public class MonteCarlo implements Agent {
      * @param leaf - the node that needs expansion
      * @return the new node (leaf) that needs simulation
      */
-
     MCTreeNode expand(MCTreeNode leaf){
-        List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
-        if (legal.isEmpty()) return leaf; // terminal node, nothing to expand
+        // derive whose turn it is from depth
+        int depth = 0;
+        MCTreeNode temp = leaf;
+        while(temp.getParent() != null){
+            depth++;
+            temp = temp.getParent();
+        }
+        Cell currentColor = (depth % 2 == 0) ? color : reverse(color);
+
+        List<int[]> legal = leaf.getBoard().getAllLegalMoves(currentColor);
+        if (legal.isEmpty()) return leaf;
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
-        // Copies the board so we don't destroy the parent board
         Board copy = new Board(leaf.getBoard());
-
-        // Applies the move on the copy
-        Othello othello = new Othello(copy,null);
-        othello.setPiece(action[0], action[1], color);
+        Othello othello = new Othello(copy, null);
+        othello.setPiece(action[0], action[1], currentColor); // ← also fixed here
 
         MCTreeNode child = new MCTreeNode(copy, leaf, action);
         leaf.addChild(child);
@@ -170,17 +185,26 @@ public class MonteCarlo implements Agent {
      * @param child - the given node the simulation was run on
      */
     void backPropagate(Cell result, MCTreeNode child){
+        // derive starting color from depth (root = color, children alternate)
+        int depth = 0;
+        MCTreeNode temp = child;
+        while(temp.getParent() != null){
+            depth++;
+            temp = temp.getParent();
+        }
+        Cell nodeColor = (depth % 2 == 0) ? color : reverse(color);
+
         MCTreeNode curNode = child;
-        
         while(curNode != null){
             curNode.incrementVisit();
-            
-            if(result == color){
+
+            if(result == nodeColor){
                 curNode.incrementWins();
-            } else if (result == reverse(color)) {
+            } else {
                 curNode.incrementLosses();
             }
 
+            nodeColor = reverse(nodeColor);
             curNode = curNode.getParent();
         }
     }

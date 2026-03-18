@@ -10,25 +10,28 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String agent1 = args[0];
-        String agent2 = args[1];
-        long time = Long.parseLong(args[2]);
+//        String agent1 = args[0];
+//        String agent2 = args[1];
+//        long time = Long.parseLong(args[2]);
+//
+//        Agent blackAgent;
+//        if(agent1.equals("player")) {
+//            blackAgent = new Player();
+//        }else{
+//            blackAgent = new MonteCarlo(Cell.BLACK,time);
+//        }
+//
+//        Agent whiteAgent;
+//        if(agent2.equals("ai")){
+//            whiteAgent = new MonteCarlo(Cell.WHITE,time);
+//        }else{
+//            whiteAgent = new Player();
+//        }
+//
+//        new GameFrame(blackAgent, whiteAgent).start();
 
-        Agent blackAgent;
-        if(agent1.equals("player")) {
-            blackAgent = new Player();
-        }else{
-            blackAgent = new MonteCarlo(Cell.BLACK,time);
+        for(int i=0;1<100;i++){
+            new GameFrame(new MonteCarlo(Cell.BLACK,3000), new MonteCarlo(Cell.WHITE,500)).start();
         }
-
-        Agent whiteAgent;
-        if(agent2.equals("ai")){
-            whiteAgent = new MonteCarlo(Cell.WHITE,time);
-        }else{
-            whiteAgent = new Player();
-        }
-
-        new GameFrame(blackAgent, whiteAgent).start();
-
     }
 }

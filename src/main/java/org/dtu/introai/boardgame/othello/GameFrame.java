@@ -128,6 +128,7 @@ public class GameFrame extends JFrame {
                                         "The Final score is: " + othello.board.countPieces()
                         )
                 );
+                System.out.println("Winner: " + othello.getWinner() + ", Score: " + othello.board.countPieces());
             }
         };
     }
