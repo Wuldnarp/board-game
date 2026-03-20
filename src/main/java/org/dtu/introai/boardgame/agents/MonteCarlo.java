@@ -30,7 +30,7 @@ public class MonteCarlo implements Agent {
     public int[] act(Board board) {
         this.tree = new MCTreeNode(board, null);
         long start = System.currentTimeMillis();
-        while(System.currentTimeMillis() - start < durationMs){ /*MISSING implement is the game over as part of the loop condition */
+        while(System.currentTimeMillis() - start < durationMs){
             MCTreeNode selectedLeaf = select();
             MCTreeNode child = expand(selectedLeaf);
             Cell result = simulate(child);
@@ -89,7 +89,9 @@ public class MonteCarlo implements Agent {
      */
 
     MCTreeNode expand(MCTreeNode leaf){
-        List<int[]> legal = leaf.getBoard().getAllLegalMoves(color);
+        // determine whose turn it is at this node
+        Cell leafPlayer = leaf.getPlayer() == null ? color : reverse(leaf.getPlayer());
+        List<int[]> legal = leaf.getBoard().getAllLegalMoves(leafPlayer);
         if (legal.isEmpty()) return leaf; // terminal node, nothing to expand
         int[] action = legal.get(new Random().nextInt(legal.size()));
 
@@ -97,10 +99,10 @@ public class MonteCarlo implements Agent {
         Board copy = new Board(leaf.getBoard());
 
         // Applies the move on the copy
-        Othello othello = new Othello(copy,null);
-        othello.setPiece(action[0], action[1], color);
+        Othello othello = new Othello(copy, null);
+        othello.setPiece(action[0], action[1], leafPlayer);
 
-        MCTreeNode child = new MCTreeNode(copy, leaf, action);
+        MCTreeNode child = new MCTreeNode(copy, leaf, action, leafPlayer);
         leaf.addChild(child);
         return child;
     }
@@ -171,13 +173,14 @@ public class MonteCarlo implements Agent {
      */
     void backPropagate(Cell result, MCTreeNode child){
         MCTreeNode curNode = child;
-        
+
         while(curNode != null){
             curNode.incrementVisit();
-            
-            if(result == color){
+
+            // only reward nodes belonging to the player who won
+            if(result == curNode.getPlayer()){
                 curNode.incrementWins();
-            } else if (result == reverse(color)) {
+            } else if (result != null && result != Cell.EMPTY && result != curNode.getPlayer()) {
                 curNode.incrementLosses();
             }
 
