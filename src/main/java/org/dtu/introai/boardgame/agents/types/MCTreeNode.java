@@ -1,6 +1,7 @@
 package org.dtu.introai.boardgame.agents.types;
 
 import org.dtu.introai.boardgame.util.Board;
+import org.dtu.introai.boardgame.util.Cell;
 
 import java.util.ArrayList;
 
@@ -13,16 +14,26 @@ public class MCTreeNode {
     private MCTreeNode parent;
     private Board board;
     private int[] move;
+    private Cell player;
 
-    public MCTreeNode(Board board, MCTreeNode parent, int[] move){
+    public MCTreeNode(Board board, MCTreeNode parent, int[] move, Cell player){
         this.board = board;
         this.parent = parent;
         this.move = move;
+        this.player = player;
         this.children = new ArrayList<>();
     }
 
+    public MCTreeNode(Board board, MCTreeNode parent, int[] move){
+        this(board, parent, move, null);
+    }
+
     public MCTreeNode(Board board, MCTreeNode parent){
-        this(board, parent, null);
+        this(board, parent, null, null);
+    }
+
+    public Cell getPlayer() {
+        return player;
     }
 
     public int[] getMove() {
