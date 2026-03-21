@@ -25,6 +25,11 @@ public class Main {
             return;
         }
 
+        if (args[0].equals("benchmark")) {
+            Benchmark.main(java.util.Arrays.copyOfRange(args, 1, args.length));
+            return;
+        }
+
         String agent1 = args[0];
         String agent2 = args[1];
         long time1 = Long.parseLong(args[2]);

@@ -77,7 +77,7 @@ public class MonteCarlo implements Agent {
      */
     MCTreeNode select(){
         MCTreeNode node = tree;
-        while (!node.getChildren().isEmpty() && node.getChildren().size() == node.getBoard().getAllLegalMoves(color).size()) {
+        while (!node.getChildren().isEmpty() && node.getChildren().size() == node.getBoard().getAllLegalMoves(node.getPlayer() == null ? color : reverse(node.getPlayer())).size()) {
             node = selectChildWithHighestUpperConfidentBound(node);
         }
         return node;
@@ -93,7 +93,15 @@ public class MonteCarlo implements Agent {
         Cell leafPlayer = leaf.getPlayer() == null ? color : reverse(leaf.getPlayer());
         List<int[]> legal = leaf.getBoard().getAllLegalMoves(leafPlayer);
         if (legal.isEmpty()) return leaf; // terminal node, nothing to expand
-        int[] action = legal.get(new Random().nextInt(legal.size()));
+
+        // filter out moves already tried
+        List<int[]> untried = legal.stream()
+            .filter(m -> leaf.getChildren().stream()
+                .noneMatch(c -> java.util.Arrays.equals(c.getMove(), m)))
+            .collect(java.util.stream.Collectors.toList());
+        if (untried.isEmpty()) return leaf;
+
+        int[] action = untried.get(new Random().nextInt(untried.size()));
 
         // Copies the board so we don't destroy the parent board
         Board copy = new Board(leaf.getBoard());
@@ -115,7 +123,9 @@ public class MonteCarlo implements Agent {
 
         HashMap<Cell, Supplier<int[]>> supplyMap = new HashMap<>();
 
-        Othello simulatedGame = new Othello(child.getBoard(), supplyMap);
+        // start simulation from the correct player's turn
+        Cell nextPlayer = child.getPlayer() == null ? color : reverse(child.getPlayer());
+        Othello simulatedGame = new Othello(child.getBoard(), supplyMap, nextPlayer);
 
         Supplier<int[]> supplyLoopWhite = new Supplier<int[]>() {
             @Override

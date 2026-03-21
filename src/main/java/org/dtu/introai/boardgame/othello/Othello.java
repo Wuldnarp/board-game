@@ -20,13 +20,15 @@ public class Othello {
     Cell winner;
 
     public Othello(Board board, HashMap<Cell, Supplier<int[]>> supplyMap) {
+        this(board, supplyMap, Cell.BLACK);
+    }
+
+    public Othello(Board board, HashMap<Cell, Supplier<int[]>> supplyMap, Cell startingPlayer) {
         this.board = board;
         this.complete = false;
         this.winner = Cell.EMPTY;
-
         this.supplyMap = supplyMap;
-
-        this.current = Cell.BLACK;
+        this.current = startingPlayer;
     }
 
     public void gameLoop(Consumer<Object> updateCycle, Consumer<Object> endMessage){

@@ -9,7 +9,7 @@
 mvn clean install
 ```
 
-## Run the game
+## Run a single shown game with two agents
 
 ```
 mvn exec:java -Dexec.args="<agent1> <agent2> <time1> [time2]"
@@ -47,4 +47,13 @@ mvn exec:java -Dexec.args="player player 0"
 ## Run tests
 ```bash
 mvn test
+```
+
+## Run benchmark
+
+benchmark <number of games> <time agent black> <time agent white>
+
+### Example
+```bash
+mvn exec:java -Dexec.args="benchmark 10 500 100"
 ```
