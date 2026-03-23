@@ -50,8 +50,6 @@ public class MonteCarlo implements Agent {
         // exploration constant, squareroot (2) from book example
         double C = 1.4; 
 
-        // exploitation term: win rate of this node
-        // exploration term: prefer nodes visited less relative to parent
         return ((double) node.getWins() / node.getVisits()) + C * Math.sqrt(Math.log(parent.getVisits()) / node.getVisits());
     }
 
@@ -154,27 +152,6 @@ public class MonteCarlo implements Agent {
         simulatedGame.setSupplyMap(supplyMap);
         simulatedGame.gameLoop(consumer, consumer);
         return simulatedGame.getWinner();
-
-//        Random r = new Random();
-//        Othello simulatedGame = new Othello(child.getBoard(),null);
-//        Cell playerCell = color; //always start with the play of the current color
-//        int[] move;
-//        List<int[]> moves;
-//        Board board = child.getBoard();
-//        do{ //play game untill its finished
-//            moves = board.getAllLegalMoves(playerCell); //get all posible moves
-//            playerCell = color == Cell.WHITE ? Cell.BLACK : Cell.WHITE; //reverse player cell
-//            if(moves.isEmpty()){ //if empty go to next loop, where if game is ended will be evaluated as well
-//                continue;
-//            }
-//            move = moves.get(r.nextInt(moves.size())); //pick a random move
-//            simulatedGame.setPiece(move[0], move[1], color); //place a peace on board
-//            board = simulatedGame.getBoard(); //get new board
-//            MCTreeNode newChild = new MCTreeNode(new Board(board), child);
-//            child.addChild(newChild);
-//            child = newChild;
-//        } while(simulatedGame.isComplete()); //todo finish while loop when game is over
-//        return simulatedGame.getWinner();
     }
 
     /**
